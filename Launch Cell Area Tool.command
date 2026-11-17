@@ -67,11 +67,13 @@ if [ -z "$PY" ]; then
     echo
     echo "Fix (recommended): install the official build from"
     echo "    https://www.python.org/downloads/macos/"
-    echo "then, in Terminal, from this folder:"
+    echo "then, in a new Terminal window:"
+    printf '    cd %q\n' "$PWD"
     echo "    python3 -m pip install -r requirements.txt"
     echo
     echo "Or with Homebrew, which needs a virtual environment in this folder:"
     echo "    brew install python-tk"
+    printf '    cd %q\n' "$PWD"
     echo "    python3 -m venv .venv"
     echo "    .venv/bin/python3 -m pip install -r requirements.txt"
     echo

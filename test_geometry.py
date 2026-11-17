@@ -52,7 +52,7 @@ def have(module):
     try:
         __import__(module)
         return True
-    except ImportError:
+    except Exception:       # missing, or present but unable to load
         return False
 
 
@@ -483,8 +483,14 @@ def test_pip_command():
         check(_pip_command("scipy") == os.path.join("opt", "py", "python3") + " -m pip install scipy",
               "command uses the running interpreter")
         sys.executable = os.path.join("C:", "Program Files", "Py", "pythonw.exe")
-        check(_pip_command("tifffile") == '"' + os.path.join("C:", "Program Files", "Py", "python.exe")
+        # A quoted path is run through "cmd /c" on Windows so that the line
+        # also works in PowerShell.
+        prefix = "cmd /c " if os.name == "nt" else ""
+        check(_pip_command("tifffile") == prefix + '"' + os.path.join("C:", "Program Files", "Py", "python.exe")
               + '" -m pip install tifffile', "pythonw -> python, quoted when the path has a space")
+        sys.executable = os.path.join("opt", "R&D (x86)", "python3")
+        check(_pip_command("scipy") == '"' + os.path.join("opt", "R&D (x86)", "python3")
+              + '" -m pip install scipy', "other special characters: quoted, no prefix")
         sys.executable = ""
         check(_pip_command("numpy") == "python3 -m pip install numpy", "no interpreter path known")
     finally:
@@ -574,6 +580,14 @@ def test_detect_scale_bar_synthetic():
     t[282:288, 250:400] = 255
     bart = detect_scale_bar(t)
     check(bart is not None and bart[4] == 300, f"tilted bar keeps its length, got {bart}")
+    r = np.full((300, 400), 128, dtype=np.uint8)
+    r[278:290, 52:248] = 255            # 12 px thick, with rounded ends
+    r[280:288, 51] = 255
+    r[280:288, 248] = 255
+    r[282:286, 50] = 255
+    r[282:286, 249] = 255
+    barr = detect_scale_bar(r)
+    check(barr is not None and barr[4] == 200, f"rounded ends belong to the bar, got {barr}")
 
     # A 1-px rule or streak must not outrank a real bar ...
     e = np.full((1024, 1280), 128, dtype=np.uint8)

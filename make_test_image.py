@@ -4,7 +4,7 @@
 Writes test_tem_image.png and test_tem_image_truth.txt (the true areas) next to
 this script, for trying out cell_area_tool without real data.
 
-    python make_test_image.py
+    python3 make_test_image.py        (py make_test_image.py on Windows)
 """
 import os
 

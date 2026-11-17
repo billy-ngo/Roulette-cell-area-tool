@@ -97,7 +97,8 @@ Then start the tool:
    - `Detect scale bar` finds the bar, highlights it in magenta and asks for
      its length. A bar thinner than 3 px is only picked when nothing thicker
      and bar-like is present; if something else is highlighted, cancel and use
-     `Set scale (bar)`.
+     `Set scale (bar)`. The detected length can be a pixel or two short for
+     bars with rounded or blurred ends; trace such bars yourself.
    - `Set scale (bar)`: click the two ends of the bar and enter its length.
    - `Pixel size…`: enter the pixel size directly.
 

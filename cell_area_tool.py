@@ -51,8 +51,14 @@ def _pip_command(package: str) -> str:
     folder, name = os.path.split(exe)
     if name.lower() == "pythonw.exe":       # no console: pip's output would be lost
         exe = os.path.join(folder, "python.exe")
-    if " " in exe:
+    if re.search(r"[^\w.:\\/+~-]", exe):        # a space, &, ( ...: must be quoted
+        only_spaces = not re.search(r"[^\w.:\\/+~ -]", exe)
         exe = f'"{exe}"'
+        # PowerShell does not run a quoted path that is followed by arguments.
+        # Through "cmd /c" the line works in PowerShell and in cmd alike, as
+        # long as the path holds none of cmd's own special characters.
+        if os.name == "nt" and only_spaces:
+            exe = "cmd /c " + exe
     return f"{exe} -m pip install {package}"
 
 
@@ -820,10 +826,12 @@ def detect_scale_bar(gray: "np.ndarray") -> Optional[Tuple[int, int, int, int, f
                     best_score[thick] = score
                     # Stray near-saturated pixels touching the ends of the bar
                     # widen the bounding box, so the length is the span of the
-                    # columns in which the object is more than half as thick
-                    # as it typically (median) is.
+                    # columns in which the object is more than a quarter as
+                    # thick as it typically (median) is, and more than 1 px
+                    # (rounded or JPEG-softened ends still belong to the bar).
                     cols = (labeled[sl] == idx).sum(axis=0)
-                    keep = np.flatnonzero(2 * cols > np.median(cols))
+                    med = float(np.median(cols))
+                    keep = np.flatnonzero(cols > min(med / 2.0, max(1.0, med / 4.0)))
                     length = float(keep[-1] - keep[0] + 1)
                     best[thick] = (x0, y0, x1, y1, length)
     return best[True] or best[False]
@@ -1156,6 +1164,10 @@ def _build_gui():
             width = min(max(1280, self.winfo_reqwidth()), self.winfo_screenwidth())
             height = max(600, min(820, self.winfo_screenheight() - 80))
             self.geometry(f"{width}x{height}")
+            if height < 820 and sys.platform == "win32":
+                # Windows does not keep a new window clear of the task bar, which
+                # would cover the status bar on a screen this low: fill the screen.
+                self.state("zoomed")
             self._refresh_tree()
             self._update_status()
 
@@ -1224,7 +1236,7 @@ def _build_gui():
             # A read-only Text does not take the focus on every platform, and
             # without the focus its text cannot be selected and copied.
             box.bind("<Button-1>", lambda e: box.focus_set())
-            for key in ("<Return>", "<Escape>"):
+            for key in ("<Return>", "<KP_Enter>", "<Escape>"):
                 win.bind(key, lambda e: win.destroy())
             win.update_idletasks()
             x = self.winfo_rootx() + max(0, (self.winfo_width() - win.winfo_reqwidth()) // 2)
@@ -1305,7 +1317,7 @@ def _build_gui():
             cols = ("no", "image", "area", "perim")
             # The table asks for a few rows only and takes whatever height is
             # left, so that the summary and the help text below it stay visible.
-            self.tree = ttk.Treeview(side, columns=cols, show="headings", height=8, selectmode="browse")
+            self.tree = ttk.Treeview(side, columns=cols, show="headings", height=4, selectmode="browse")
             for c, txt, w, anchor in (
                 ("no", "No.", 40, "center"),
                 ("image", "Image", 110, "w"),
@@ -2251,7 +2263,7 @@ def _build_gui():
                 messagebox.showerror("Export failed", str(exc), parent=self)
                 return
             msg = f"Saved to:\n{out_dir}\n\n" + _listing(written)
-            # The table lists images by file name only, so say which rows belong
+            # The CSV lists images by file name only, so say which rows belong
             # to which file when two images share a name.
             names = [d.name for d in self.docs]
             clashes = [f"cells {self.global_number(di, 0)}–"
@@ -2259,8 +2271,9 @@ def _build_gui():
                        f"{labels[di]}  →  {fname}"
                        for di, fname in jpg_names.items() if names.count(names[di]) > 1]
             if clashes:
-                msg += ("\n\nSome images have the same file name, which is all the table "
-                        "records. Their rows are:\n" + "\n".join(clashes))
+                msg += ("\n\nSome images have the same file name, and the image column of "
+                        "the CSV holds the file name only. Their cells are:\n"
+                        + "\n".join(clashes))
             self._show_report("Export complete", msg)
 
         def _overlay_names(self) -> dict:
