@@ -1,0 +1,15 @@
+﻿cell_no,image,calibrated,unit_per_px,length_unit,n_vertices,area_px2,area_value,area_unit,perimeter_px,perimeter_value,perimeter_unit,self_intersecting
+1,grid3_1250_5.jpg,True,13.4228,nm,14,1151.5915,207485,nm²,162.8331,2185.68,nm,False
+2,grid3_1250_5.jpg,True,13.4228,nm,12,1432.2043,258043,nm²,194.6485,2612.73,nm,False
+3,grid3_1250_5.jpg,True,13.4228,nm,14,2028.7683,365527,nm²,237.8383,3192.46,nm,False
+4,grid3_1250_5.jpg,True,13.4228,nm,12,1260.5040,227108,nm²,179.9509,2415.45,nm,False
+5,grid3_1250_5.jpg,True,13.4228,nm,13,1742.3597,313925,nm²,222.0376,2980.37,nm,True
+6,grid3_1250_6.jpg,True,13.4228,nm,14,1457.4054,262584,nm²,193.6079,2598.76,nm,False
+7,grid3_1250_6.jpg,True,13.4228,nm,12,706.8459,127354,nm²,130.5896,1752.88,nm,True
+8,grid3_1250_7.jpg,True,13.4228,nm,13,1534.8913,276545,nm²,196.3258,2635.25,nm,False
+9,grid3_1250_7.jpg,True,13.4228,nm,12,1233.5480,222251,nm²,178.0775,2390.3,nm,False
+10,grid3_1250_8.jpg,True,13.4228,nm,14,2250.0674,405399,nm²,266.1901,3573.02,nm,False
+11,grid3_1250_9.jpg,True,13.4228,nm,15,1976.8011,356164,nm²,250.6096,3363.89,nm,False
+12,grid3_1250_9.jpg,True,13.4228,nm,18,3401.8029,612910,nm²,392.8389,5273.01,nm,False
+13,grid3_1250_10.jpg,True,13.4228,nm,11,1775.5615,319907,nm²,208.9966,2805.32,nm,False
+14,grid3_1250_10.jpg,True,13.4228,nm,18,2636.6646,475053,nm²,295.3033,3963.8,nm,False
