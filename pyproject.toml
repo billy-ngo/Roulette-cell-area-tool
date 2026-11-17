@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "roulette-cell-tool"
+version = "1.0.0"
+description = "Outline cells in TEM images and measure their area and perimeter"
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "billy-ngo" }]
+keywords = ["microscopy", "TEM", "cell area", "image analysis", "morphometry"]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Image Processing",
+]
+dependencies = [
+    "numpy",
+    "Pillow>=9.0",
+    "scipy",
+    "tifffile",
+]
+
+[project.urls]
+Homepage = "https://github.com/billy-ngo/Roulette-cell-area-tool"
+Issues = "https://github.com/billy-ngo/Roulette-cell-area-tool/issues"
+
+# A GUI script: on Windows it starts without a console window.
+[project.gui-scripts]
+roulette = "cell_area_tool:main"
+
+[tool.setuptools]
+py-modules = ["cell_area_tool"]
